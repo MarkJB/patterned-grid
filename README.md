@@ -7,6 +7,8 @@ Experiment using ChatGPT (Started with GPT4, but ran up against the limits, wasn
 
 Tiles consist of SVG arcs and lines or just lines. The tiles vary the direction of the lines (either vertical or horizontal) and then the whole tile is rotated at random and layed out in a grid.
 
+This is an attempt at reproducing generative art created by [Dan Catt](https://github.com/revdancatt)
+
 ## Prerequisites
 
 Nothing special required to run the example, but you'll need a working [nodejs install](https://nodejs.org/en) if you want to modify the code
