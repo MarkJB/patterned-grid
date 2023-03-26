@@ -12,24 +12,37 @@ class Tile {
     this.element = this.createTileElement();
   }
 
+  addToGrid(x: number, y: number): void {
+    this.element.setAttribute(
+      "transform",
+      `translate(${x}, ${y}) rotate(${this.rotation})`
+    );
+  }
+
   createTileElement(): SVGElement {
+    const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    group.setAttribute("class", "tile");
+    group.setAttribute(
+      "transform",
+      `translate(${this.rotation}, ${this.rotation}) rotate(${this.rotation})`
+    );
+
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 100 100");
     svg.setAttribute("width", "100");
     svg.setAttribute("height", "100");
-    svg.setAttribute("class", "tile");
 
     const linesGroup = document.createElementNS(
       "http://www.w3.org/2000/svg",
       "g"
     );
-    svg.appendChild(linesGroup);
+    group.appendChild(linesGroup);
 
     // Create a mask element
     const maskId = `mask-${Math.random().toString(36).substr(2, 9)}`;
     const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
     mask.setAttribute("id", maskId);
-    svg.appendChild(mask);
+    group.appendChild(mask);
 
     // Add a white rectangle to the mask to cover the entire tile
     const maskRect = document.createElementNS(
@@ -47,7 +60,6 @@ class Tile {
     linesGroup.setAttribute("mask", `url(#${maskId})`);
 
     // Create parallel arcs with different radii all starting at the top-left corner
-    // const arcRadii = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
     const arcStartAngles = [0]; // Start all arcs from the top-left corner
 
     // Instead of manually specifying the points for each Radii (arcRadii) we can
@@ -70,7 +82,7 @@ class Tile {
       if (this.showArcs) {
         // Add arcs, lines and mask
         const arc = this.createArc(0, 0, radius, 0, 0 + 90);
-        svg.appendChild(arc);
+        group.appendChild(arc);
 
         // Create a black-filled arc for the mask
         const maskArc = this.createArc(0, 0, radius, 0, 0 + 90);
@@ -86,9 +98,10 @@ class Tile {
         linesGroup.appendChild(lines);
       }
     }
-    svg.style.transform = `rotate(${this.rotation}deg)`;
+    // group.style.transform = `rotate(${this.rotation}deg)`
+    group.setAttribute("transform", `rotate($this.rotation})`);
 
-    return svg;
+    return group;
   }
 
   createHorizontalLine(
@@ -126,40 +139,6 @@ class Tile {
 
     return lines;
   }
-
-  //   createHorizontalLines(
-  //     radius: number,
-  //     startY: number,
-  //     direction: "left" | "right"
-  //   ): SVGElement {
-  //     const lines = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  //     const lineOffset = 0;
-
-  //     while (startY <= 100) {
-  //       const line = document.createElementNS(
-  //         "http://www.w3.org/2000/svg",
-  //         "line"
-  //       );
-
-  //       if (direction === "left") {
-  //         line.setAttribute("x1", "0");
-  //         line.setAttribute("x2", String(radius - lineOffset));
-  //       } else {
-  //         line.setAttribute("x1", String(radius + lineOffset));
-  //         line.setAttribute("x2", "100");
-  //       }
-
-  //       line.setAttribute("y1", String(startY));
-  //       line.setAttribute("y2", String(startY));
-  //       line.setAttribute("stroke", "black");
-  //       line.setAttribute("stroke-width", "2");
-
-  //       lines.appendChild(line);
-  //       startY += 10;
-  //     }
-
-  //     return lines;
-  //   }
 
   createArc(
     cx: number,
@@ -214,16 +193,18 @@ class Tile {
 const grid = document.getElementById("grid");
 const numRows = 10;
 const numCols = 10;
-//   const frequency = Math.random(); // Determines the frequency of the sine wave
-//   const amplitude = 1;  // Determines the amplitude of the sine wave
 
+const outerSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+outerSVG.setAttribute("viewBox", `0 0 ${numCols * 100} ${numRows * 100}`);
+outerSVG.setAttribute("width", "100%");
+outerSVG.setAttribute("height", "100%");
+outerSVG.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+grid?.appendChild(outerSVG);
+
+// Loop to add tiles to a grid
 for (let row = 0; row < numRows; row++) {
   for (let col = 0; col < numCols; col++) {
     const rotation = Math.floor(Math.random() * 4) * 90;
-    // Calculate the angle for the sine function based on row and column position
-    // const angle = Math.floor(2 * Math.PI * frequency * (row + col))
-    // Apply the sine function to the angle and scale it by the amplitude
-    // const rotation = 90 * Math.round(amplitude * Math.sin(angle))
     const color = `hsl(${(row * 50 + col * 50) % 360}, 60%, 70%)`;
 
     // Randomly decide whether to show arcs
@@ -231,15 +212,36 @@ for (let row = 0; row < numRows; row++) {
 
     // Add a tile to the grid
     const tile = new Tile(rotation, color, showArcs);
-    grid?.appendChild(tile.element);
+    const tileGroup = tile.element;
+    tileGroup.setAttribute(
+      "transform",
+      `translate(${col * 100} ${row * 100}) rotate(${rotation} 50 50)`
+    );
+
+    outerSVG?.appendChild(tileGroup);
   }
 }
 
-// Create an overlay tile
-// const overlayTile = new Tile(0, "rgba(255, 255, 255, 0.5)"); // Semi-transparent white
-// overlayTile.element.style.width = "200px";
-// overlayTile.element.style.height = "200px";
-// overlayTile.element.style.left = "50px";
-// overlayTile.element.style.top = "50px";
-// overlayTile.element.style.zIndex = "1"; // Set a higher z-index to place it above other tiles
-// grid?.appendChild(overlayTile.element);
+// SVG Export
+const downloadButton = document.getElementById("download-svg");
+
+if (downloadButton) {
+  downloadButton.addEventListener("click", () => {
+    // Serialize the outerSVG element
+    const svgData = new XMLSerializer().serializeToString(outerSVG);
+
+    // Create a Blob and a URL for the SVG data
+    const svgBlob = new Blob([svgData], {
+      type: "image/svg+xmlcharset=utf-8",
+    });
+    const svgUrl = URL.createObjectURL(svgBlob);
+
+    // Create a download link, set its href and download attributes, and trigger a click event
+    const downloadLink = document.createElement("a");
+    downloadLink.href = svgUrl;
+    downloadLink.download = "generated-image.svg";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+  });
+}
