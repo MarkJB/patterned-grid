@@ -43,26 +43,26 @@ class Tile {
     );
     group.appendChild(linesGroup);
 
-    // Create a mask element
-    const maskId = `mask-${Math.random().toString(36).substr(2, 9)}`;
-    const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
-    mask.setAttribute("id", maskId);
-    group.appendChild(mask);
+    // // Create a mask element
+    // const maskId = `mask-${Math.random().toString(36).substr(2, 9)}`;
+    // const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
+    // mask.setAttribute("id", maskId);
+    // group.appendChild(mask);
 
-    // Add a white rectangle to the mask to cover the entire tile
-    const maskRect = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "rect"
-    );
-    maskRect.setAttribute("x", "-1");
-    maskRect.setAttribute("y", "-1");
-    maskRect.setAttribute("width", "102");
-    maskRect.setAttribute("height", "102");
-    maskRect.setAttribute("fill", "white");
-    mask.appendChild(maskRect);
+    // // Add a white rectangle to the mask to cover the entire tile
+    // const maskRect = document.createElementNS(
+    //   "http://www.w3.org/2000/svg",
+    //   "rect"
+    // );
+    // maskRect.setAttribute("x", "-1");
+    // maskRect.setAttribute("y", "-1");
+    // maskRect.setAttribute("width", "102");
+    // maskRect.setAttribute("height", "102");
+    // maskRect.setAttribute("fill", "white");
+    // mask.appendChild(maskRect);
 
-    // Set the mask attribute for the linesGroup using maskId
-    linesGroup.setAttribute("mask", `url(#${maskId})`);
+    // // Set the mask attribute for the linesGroup using maskId
+    // linesGroup.setAttribute("mask", `url(#${maskId})`);
 
     // Create parallel arcs with different radii all starting at the top-left corner
     const arcStartAngles = [0]; // Start all arcs from the top-left corner
@@ -97,12 +97,17 @@ class Tile {
         const arcSegment = parsePath(arcPath as string)[1];
 
         let xCoord: number;
+        let rxCoord: number;
         if (arcSegment.code.toUpperCase() === "H") {
           console.log(arcSegment);
-          // xCoord = arcSegment.x;
+          if ("x" in arcSegment){xCoord = arcSegment.x;}
+          
         } else if (arcSegment.code.toUpperCase() === "V") {
           console.log(arcSegment);
-          // xCoord = arcSegment.y;
+          if ("y" in arcSegment){xCoord = arcSegment.y;}
+        } else if (arcSegment.code.toUpperCase() === "A") {
+          console.log(arcSegment);
+          if ("rx" in arcSegment){rxCoord = arcSegment.rx;}
         } else {
           console.log(arcSegment);
           throw new Error(`Unexpected command type: ${arcSegment.command}`);
@@ -115,8 +120,8 @@ class Tile {
 
           if (
             direction === "horizontal" &&
-            x1 >= xCoord //&&
-            // x2 <= xCoord + arcSegment.rx
+            x1 >= xCoord &&
+            x2 <= xCoord + rxCoord
           ) {
             return;
           }
@@ -160,7 +165,7 @@ class Tile {
     //   }
     // }
     // group.style.transform = `rotate(${this.rotation}deg)`
-    group.setAttribute("transform", `rotate($this.rotation})`);
+    // group.setAttribute("transform", `rotate($this.rotation})`);
 
     return group;
   }
@@ -256,8 +261,8 @@ class Tile {
 
 // Create a grid of patterned tiles -asksajjdsj
 const grid = document.getElementById("grid");
-const numRows = 10;
-const numCols = 10;
+const numRows = 2;
+const numCols = 2;
 
 const outerSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 outerSVG.setAttribute("viewBox", `0 0 ${numCols * 100} ${numRows * 100}`);
@@ -311,4 +316,4 @@ if (downloadButton) {
   });
 }
 
-module.exports = Tile;
+export default Tile;
