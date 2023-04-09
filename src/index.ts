@@ -1,3 +1,8 @@
+import SVG from "svg.js";
+// const SVG = require("svg.js");
+import { parseSVG as parsePath } from "svg-path-parser";
+// const parsePath = require("svg-path-parser").parseSVG();
+
 // Define the Tile class - arcs
 class Tile {
   element: SVGElement;
@@ -75,29 +80,85 @@ class Tile {
 
     const direction = Math.random() < 0.5 ? "horizontal" : "vertical";
 
+    // Create a new SVG container for the boolean operation
+    const draw = SVG("svg-container").size("100%", "100%");
+
     for (const radius of calcRadii(100, 10)) {
-      // Randomly decide the direction for the horizontal lines
+      // ... (no changes to the start of the loop)
 
-      // Add arcs and lines or just lines
+      // Add horizontal lines beyond the arc with the chosen direction
+      const lines = this.createHorizontalLine(radius, direction);
+
+      // Perform the subtraction operation
       if (this.showArcs) {
-        // Add arcs, lines and mask
         const arc = this.createArc(0, 0, radius, 0, 0 + 90);
-        group.appendChild(arc);
 
-        // Create a black-filled arc for the mask
-        const maskArc = this.createArc(0, 0, radius, 0, 0 + 90);
-        maskArc.setAttribute("fill", "black");
-        mask.appendChild(maskArc);
+        const arcPath = arc.getAttribute("d");
+        const arcSegment = parsePath(arcPath as string)[1];
 
-        // Add horizontal lines beyond the arc with the chosen direction
-        const lines = this.createHorizontalLine(radius, direction);
-        linesGroup.appendChild(lines);
+        let xCoord: number;
+        if (arcSegment.code.toUpperCase() === "H") {
+          console.log(arcSegment);
+          // xCoord = arcSegment.x;
+        } else if (arcSegment.code.toUpperCase() === "V") {
+          console.log(arcSegment);
+          // xCoord = arcSegment.y;
+        } else {
+          console.log(arcSegment);
+          throw new Error(`Unexpected command type: ${arcSegment.command}`);
+        }
+
+        // Remove the line segment that is behind the arc
+        const filteredLines = lines.querySelectorAll("line").forEach((line) => {
+          const x1 = parseFloat(line.getAttribute("x1") as string);
+          const x2 = parseFloat(line.getAttribute("x2") as string);
+
+          if (
+            direction === "horizontal" &&
+            x1 >= xCoord //&&
+            // x2 <= xCoord + arcSegment.rx
+          ) {
+            return;
+          }
+
+          linesGroup.appendChild(line);
+        });
       } else {
-        // Add lines only
-        const lines = this.createHorizontalLine(radius, direction);
         linesGroup.appendChild(lines);
       }
     }
+
+    // for (const radius of calcRadii(100, 10)) {
+    //   // Randomly decide the direction for the horizontal lines
+
+    //   // Add arcs and lines or just lines
+    //   if (this.showArcs) {
+    //     // Add arcs, lines and mask
+    //     const arc = this.createArc(0, 0, radius, 0, 0 + 90);
+    //     group.appendChild(arc);
+
+    //     // Create a black-filled arc for the mask
+    //     const maskArc = this.createArc(0, 0, radius, 0, 0 + 90);
+    //     maskArc.setAttribute("fill", "black");
+    //     mask.appendChild(maskArc);
+
+    //     // // Add horizontal lines beyond the arc with the chosen direction
+    //     // const lines = this.createHorizontalLine(radius, direction);
+    //     // linesGroup.appendChild(lines);
+    //     // Add horizontal lines beyond the arc with the chosen direction
+    //     const lines = this.createHorizontalLine(radius, direction);
+    //     const lineSVG = draw.svg(lines.outerHTML);
+
+    //     // Perform the subtraction operation
+    //     const newPathId = this.generateUniqueId("new-path");
+    //     const newPath = draw.subtract(lineSVG, arc).id(newPathId);
+    //     linesGroup.appendChild(newPath.node);
+    //   } else {
+    //     // Add lines only
+    //     const lines = this.createHorizontalLine(radius, direction);
+    //     linesGroup.appendChild(lines);
+    //   }
+    // }
     // group.style.transform = `rotate(${this.rotation}deg)`
     group.setAttribute("transform", `rotate($this.rotation})`);
 
@@ -187,6 +248,10 @@ class Tile {
       y: cy + r * Math.sin(radians),
     };
   }
+
+  generateUniqueId(prefix: string): string {
+    return `${prefix}-${Math.random().toString(36).substr(2, 9)}`;
+  }
 }
 
 // Create a grid of patterned tiles -asksajjdsj
@@ -245,3 +310,5 @@ if (downloadButton) {
     document.body.removeChild(downloadLink);
   });
 }
+
+module.exports = Tile;
