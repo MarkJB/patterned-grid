@@ -4,31 +4,24 @@ import { parseSVG as parsePath } from "svg-path-parser";
 // Define the Tile class - arcs
 class Tile {
   element: SVGElement;
-  //   rotation: number;
-  //   color: string;
   showArcs: boolean;
   tileSize: number;
+  numberOfLines: number;
 
   constructor(
-    // rotation: number,
-    // color: string,
     showArcs: boolean = true,
-    tileSize: number = 100
+    tileSize: number = 100,
+    numberOfLines: number = 10
   ) {
-    // this.rotation = rotation;
-    // this.color = color;
     this.showArcs = showArcs;
     this.tileSize = tileSize;
+    this.numberOfLines = numberOfLines;
     this.element = this.createTileElement();
   }
 
   createTileElement(): SVGElement {
     const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
     group.setAttribute("class", "tile");
-    // group.setAttribute(
-    //   "transform",
-    //   `translate(${this.rotation}, ${this.rotation}) rotate(${this.rotation})`
-    // );
 
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 100 100");
@@ -41,29 +34,32 @@ class Tile {
     );
     group.appendChild(linesGroup);
 
-    // Create parallel arcs with different radii all starting at the top-left corner
-    const arcStartAngles = [0]; // Start all arcs from the top-left corner
-
     // Instead of manually specifying the points for each Radii (arcRadii) we can
     // calculate that based on the size of the tile and the number of lines we want
     const calcRadii = (size: number, qty: number): number[] => {
       const spacing = size / qty;
+      console.log("CalcRadii, size", size, "quantity", qty, "spacing", spacing);
       let arcRadii = [];
-      for (let i = 1; i <= qty; i++) {
+      for (let i = 0; i <= qty; i++) {
         arcRadii.push(0 + i * spacing); // add each position to the array
       }
       return arcRadii;
     };
 
-    const direction = Math.random() < 0.5 ? "horizontal" : "vertical";
+    // const direction = Math.random() < 0.5 ? "horizontal" : "vertical";
+    const direction = "horizontal";
 
-    for (const radius of calcRadii(100, 10)) {
-      const lines = this.createHorizontalLine(radius, direction);
+    const radii = calcRadii(this.tileSize, this.numberOfLines);
+
+    // Draw the lines and add them to the linesGroup
+    for (const radius of radii) {
+      const lines = this.createLine(radius, direction);
       linesGroup.appendChild(lines);
     }
 
+    // If we are showing arcs on this tile,
     if (this.showArcs) {
-      for (const radius of calcRadii(100, 10)) {
+      for (const radius of radii) {
         const arcCenter = { x: 0, y: 0 };
 
         Array.from(linesGroup.querySelectorAll("line")).forEach((line) => {
@@ -99,11 +95,17 @@ class Tile {
     return group;
   }
 
-  createHorizontalLine(
+  createLine(
     radius: number,
     // startY: number,
     direction: "horizontal" | "vertical"
   ): SVGElement {
+    console.log(
+      "Creating a single line with direction",
+      direction,
+      "and length",
+      radius
+    );
     const lines = document.createElementNS("http://www.w3.org/2000/svg", "g");
     const lineOffset = 0;
 
@@ -128,7 +130,7 @@ class Tile {
     }
 
     line.setAttribute("stroke", "black");
-    line.setAttribute("stroke-width", "2");
+    line.setAttribute("stroke-width", "1");
 
     lines.appendChild(line);
 
@@ -166,7 +168,7 @@ class Tile {
     arc.setAttribute("d", d);
     arc.setAttribute("fill", "none");
     arc.setAttribute("stroke", "black");
-    arc.setAttribute("stroke-width", "2");
+    arc.setAttribute("stroke-width", "1");
 
     return arc;
   }

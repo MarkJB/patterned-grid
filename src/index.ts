@@ -15,20 +15,23 @@ grid?.appendChild(outerSVG);
 // Loop to add tiles to a grid
 for (let row = 0; row < numRows; row++) {
   for (let col = 0; col < numCols; col++) {
-    const rotation = Math.floor(Math.random() * 4) * 90;
-    const color = `hsl(${(row * 50 + col * 50) % 360}, 60%, 70%)`;
+    // Chose a random rotation for the tile (constrained to 0, 90, 180 & 270)
+    // const rotation = Math.floor(Math.random() * 4) * 90;
+    const rotation = 0;
 
     // Randomly decide whether to show arcs (defaults to true)
     // const showArcs = Math.random() < 0.5;
 
     // Add a tile to the grid (all the work is done in the Tile class)
     const tile = new Tile();
+    // Define the SVG element using the tile content
     const tileGroup = tile.element;
+    // Apply a grid offset and rotation to the tile
     tileGroup.setAttribute(
       "transform",
       `translate(${col * 100} ${row * 100}) rotate(${rotation} 50 50)`
     );
-
+    // Append the SVG element 'tileGroup' to the SVG
     outerSVG?.appendChild(tileGroup);
   }
 }
