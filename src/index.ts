@@ -2,8 +2,8 @@ import Tile from "./Tile";
 
 // Create a grid of patterned tiles
 const grid = document.getElementById("grid");
-const numRows = 1;
-const numCols = 1;
+const numRows = 10;
+const numCols = 10;
 
 const outerSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 outerSVG.setAttribute("viewBox", `0 0 ${numCols * 100} ${numRows * 100}`);
@@ -16,11 +16,11 @@ grid?.appendChild(outerSVG);
 for (let row = 0; row < numRows; row++) {
   for (let col = 0; col < numCols; col++) {
     // Chose a random rotation for the tile (constrained to 0, 90, 180 & 270)
-    // const rotation = Math.floor(Math.random() * 4) * 90;
-    const rotation = 0;
+    const rotation = Math.floor(Math.random() * 4) * 90;
+    // const rotation = 0;
 
     // Randomly decide whether to show arcs (defaults to true)
-    // const showArcs = Math.random() < 0.5;
+    const showArcs = Math.random() < 0.5;
 
     // Add a tile to the grid (all the work is done in the Tile class)
     const tile = new Tile();

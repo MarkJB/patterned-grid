@@ -59,39 +59,44 @@ class Tile {
 
     // If we are showing arcs on this tile,
     if (this.showArcs) {
+      const arcCenter = { x: 0, y: 0 };
+      const largestRadius = radii[radii.length - 1];
+
+      // Convert the linesGroup.lines into an array
+      Array.from(linesGroup.querySelectorAll("line")).forEach((line) => {
+        // Extract the line start and end for the current line
+        const lineStart = {
+          x: parseFloat(line.getAttribute("x1") as string),
+          y: parseFloat(line.getAttribute("y1") as string),
+        };
+        const lineEnd = {
+          x: parseFloat(line.getAttribute("x2") as string),
+          y: parseFloat(line.getAttribute("y2") as string),
+        };
+
+        // Determine if there is an intersection for the current line
+        const intersection = this.lineArcIntersection(
+          lineStart,
+          lineEnd,
+          arcCenter,
+          largestRadius
+        );
+
+        if (intersection) {
+          console.log("Intersection found", intersection);
+          line.setAttribute("x1", String(intersection.x));
+          line.setAttribute("y1", String(intersection.y));
+        } else {
+          console.log("No intersection found");
+        }
+      });
+
+      // for each radius in the radii array
       for (const radius of radii) {
-        const arcCenter = { x: 0, y: 0 };
-
-        Array.from(linesGroup.querySelectorAll("line")).forEach((line) => {
-          const lineStart = {
-            x: parseFloat(line.getAttribute("x1") as string),
-            y: parseFloat(line.getAttribute("y1") as string),
-          };
-          const lineEnd = {
-            x: parseFloat(line.getAttribute("x2") as string),
-            y: parseFloat(line.getAttribute("y2") as string),
-          };
-
-          const intersection = this.lineArcIntersection(
-            lineStart,
-            lineEnd,
-            arcCenter,
-            radius
-          );
-
-          if (intersection) {
-            if (direction === "horizontal") {
-              line.setAttribute("x1", String(intersection.x));
-              line.setAttribute("y1", String(intersection.y));
-            } else {
-              line.setAttribute("x1", String(intersection.x));
-              line.setAttribute("y1", String(intersection.y));
-            }
-          }
-        });
+        const arc = this.createArc(0, 0, radius, 0, 0 + 90);
+        group.appendChild(arc);
       }
     }
-
     return group;
   }
 
@@ -206,10 +211,10 @@ class Tile {
     }
 
     const sign = dy < 0 ? -1 : 1;
-    const x1 = (D * dy + sign * dx * Math.sqrt(delta)) / (dr * dr);
-    const y1 = (-D * dx + Math.abs(dy) * Math.sqrt(delta)) / (dr * dr);
-    const x2 = (D * dy - sign * dx * Math.sqrt(delta)) / (dr * dr);
-    const y2 = (-D * dx - Math.abs(dy) * Math.sqrt(delta)) / (dr * dr);
+    const x1 = (D * dy - sign * dx * Math.sqrt(delta)) / (dr * dr);
+    const y1 = (-D * dx - Math.abs(dy) * Math.sqrt(delta)) / (dr * dr);
+    const x2 = (D * dy + sign * dx * Math.sqrt(delta)) / (dr * dr);
+    const y2 = (-D * dx + Math.abs(dy) * Math.sqrt(delta)) / (dr * dr);
 
     // Return the intersection point closer to the line's start point
     const d1 = Math.hypot(lineStart.x - x1, lineStart.y - y1);
