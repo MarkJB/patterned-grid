@@ -18,10 +18,10 @@ for (let row = 0; row < numRows; row++) {
     const rotation = Math.floor(Math.random() * 4) * 90;
     const color = `hsl(${(row * 50 + col * 50) % 360}, 60%, 70%)`;
 
-    // Randomly decide whether to show arcs
+    // Randomly decide whether to show arcs (defaults to true)
     // const showArcs = Math.random() < 0.5;
 
-    // Add a tile to the grid
+    // Add a tile to the grid (all the work is done in the Tile class)
     const tile = new Tile();
     const tileGroup = tile.element;
     tileGroup.setAttribute(
