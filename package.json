@@ -1,0 +1,25 @@
+{
+  "scripts": {
+    "build": "webpack --mode production",
+    "start": "webpack serve --mode development"
+  },
+  "dependencies": {
+    "path-intersection": "^2.2.1",
+    "svg-intersections": "^0.4.0",
+    "svg-path": "^0.2.1",
+    "svg-path-parser": "^1.1.0",
+    "svg.js": "^2.7.1",
+    "svg.pathmorphing.js": "^0.1.3"
+  },
+  "devDependencies": {
+    "@types/node": "^18.15.11",
+    "@types/svg-intersections": "^0.4.1",
+    "@types/svg-path-parser": "^1.1.3",
+    "@types/svg.js": "^2.3.1",
+    "ts-loader": "^9.4.2",
+    "typescript": "^5.0.4",
+    "webpack": "^5.78.0",
+    "webpack-cli": "^5.0.1",
+    "webpack-dev-server": "^4.13.2"
+  }
+}

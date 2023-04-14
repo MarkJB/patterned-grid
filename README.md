@@ -1,4 +1,5 @@
 # Generative Art Experiment
+
 ## Repeating patterned tiles in a grid
 
 ![Example Image](https://github.com/MarkJB/patterned-grid/blob/master/images/mostly-working-example-001.png)
@@ -19,12 +20,6 @@ The resulting js has been comitted so this should run simply by opening index.ht
 
 ## Development
 
-You'll need to complile the typescript source into js:
+This should work with hot-reload and auto compile by running `npm run start`
 
-Install tsc with `npm install -g tsc`
-
-Run `tsc --watch` to compile any changed you make to the `main.ts` file.
-
-Run `npx http-server .` to serve the files in a browser. Open a browser to the address suggested by the output of that command (e.g. http://127.0.0.1:8080). 
-
-Refresh the browser to generate a new version of the image.
+Build a new bundle (for those who do not want to run the dev stuff) with `npm run build` and commit the new bundle.js. Then the static HTML should run as is without any dependencies.
