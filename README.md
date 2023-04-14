@@ -4,11 +4,15 @@
 
 ![Example Image](https://github.com/MarkJB/patterned-grid/blob/master/images/example_image.png)
 
-Experiment using ChatGPT (Started with GPT4, but ran up against the limits, wasn't perfect and needed some fixes, and there are some glitches that need addressing switched to GPT3.5, but that introduced a lot of problems so fixed manually). Further fixes were done with GPT4 and many weird CGPT ommisions fixed manually (it makes a lot of mistakes).
+Experiment using ChatGPT4. Most of the weird glitches I had to fix manually, some in conjunction with ChatGPT.
 
 Tiles consist of SVG arcs and lines or just lines. The tiles vary the direction of the lines (either vertical or horizontal) and then the whole tile is rotated at random and layed out in a grid.
 
 This is an attempt at reproducing generative art created by [Dan Catt](https://github.com/revdancatt). Why? Because I like the style and I wanted to see if I could reproduce it as technical challenge, a chance to understand the limits of ChatGPT and because I like the asthectic and wanted to plot some myself.
+
+### ChatGPT4 conclusion
+
+ChatGPT4 includes a lot of ommisions and mistakes. It helps if you have a reasonable understanding of the language you are using so you can spot and fix errors. ChatGPT is hit and miss when it comes to helping you fix errors. Sometimes you can end up in a circular conversation (fixing one error but introducing a previous error and so on), but it's also very good at explaining stuff with context (mostly correct) so its a good way to quickly learn without having to spend days reading documentation and going down blind alleys that can waste a lot of time. Its a bit like pair programming with someone who doesn't judge your lack of ability 😁
 
 ## Prerequisites
 
