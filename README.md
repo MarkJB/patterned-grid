@@ -28,4 +28,4 @@ Refresh the browser to generate a new version of the image.
 
 This should work with hot-reload and auto compile by running `npm run start`
 
-Build a new bundle (for those who do not want to run the dev stuff) with `npm run build` and commit the new bundle.js. Then the static HTML should run as is without any dependencies.
+To update the static version, build a new bundle with `npm run build` and commit the new bundle.js.
