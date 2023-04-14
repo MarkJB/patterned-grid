@@ -8,7 +8,7 @@ Experiment using ChatGPT4. Most of the weird glitches I had to fix manually, som
 
 Tiles consist of SVG arcs and lines or just lines. The tiles vary the direction of the lines (either vertical or horizontal) and then the whole tile is rotated at random and layed out in a grid.
 
-This is an attempt at reproducing generative art created by [Dan Catt](https://github.com/revdancatt). Why? Because I like the style and I wanted to see if I could reproduce it as technical challenge, a chance to understand the limits of ChatGPT and because I like the asthectic and wanted to plot some myself.
+This is an attempt at reproducing generative art created by [Dan Catt](https://github.com/revdancatt). Why? Because I like the style and I wanted to see if I could reproduce it as technical challenge, a chance to understand the limits of ChatGPT and because I like the asthetic and wanted to plot some myself.
 
 ### ChatGPT4 conclusion
 
