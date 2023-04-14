@@ -12,7 +12,7 @@ This is an attempt at reproducing generative art created by [Dan Catt](https://g
 
 ### ChatGPT4 conclusion
 
-ChatGPT4 includes a lot of ommisions and mistakes. It helps if you have a reasonable understanding of the language you are using so you can spot and fix errors. ChatGPT is hit and miss when it comes to helping you fix errors. Sometimes you can end up in a circular conversation (fixing one error but introducing a previous error and so on), but it's also very good at explaining stuff with context (mostly correct) so its a good way to quickly learn without having to spend days reading documentation and going down blind alleys that can waste a lot of time. Its a bit like pair programming with someone who doesn't judge your lack of ability 😁
+ChatGPT4 includes a lot of ommisions and mistakes when generating Typescript code. It helps if you have a reasonable understanding of the language you are using so you can spot and fix errors. ChatGPT is hit and miss when it comes to helping you fix errors. Sometimes you can end up in a circular conversation (fixing one error but introducing a previous error and so on), but it's also very good at explaining stuff with context (mostly correct) so its a good way to quickly learn without having to spend days reading documentation and going down blind alleys that can waste a lot of time. Its a bit like pair programming with someone who doesn't judge your lack of ability 😁
 
 ## Prerequisites
 
