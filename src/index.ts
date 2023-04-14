@@ -3,7 +3,7 @@ import Tile from "./Tile";
 // Create a grid of patterned tiles
 const grid = document.getElementById("grid");
 const numRows = 10;
-const numCols = 10;
+const numCols = 12;
 
 const outerSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 outerSVG.setAttribute("viewBox", `0 0 ${numCols * 100} ${numRows * 100}`);

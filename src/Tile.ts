@@ -114,11 +114,6 @@ class Tile {
 
     // Horizontal Lines start at x1=0 y1=radius and finish at x2=100, y2=radius
     // Vertical Lines start at x1=radius y1=0 and finish at x2=radius, y2=100
-    if (radius === 0) {
-      radius = 1;
-    } else if (radius === 100) {
-      radius = 99;
-    }
     if (direction === "horizontal") {
       // Start of line
       line.setAttribute("x1", "0");
