@@ -2,7 +2,7 @@
 
 ## Repeating patterned tiles in a grid
 
-![Example Image](https://github.com/MarkJB/patterned-grid/blob/master/images/mostly-working-example-001.png)
+![Example Image](https://github.com/MarkJB/patterned-grid/blob/master/images/example_image.png)
 
 Experiment using ChatGPT (Started with GPT4, but ran up against the limits, wasn't perfect and needed some fixes, and there are some glitches that need addressing switched to GPT3.5, but that introduced a lot of problems so fixed manually).
 
@@ -17,6 +17,8 @@ Nothing special required to run the example, but you'll need a working [nodejs i
 ## Running
 
 The resulting js has been comitted so this should run simply by opening index.html in a browser.
+
+Refresh the browser to generate a new version of the image.
 
 ## Development
 
