@@ -4,15 +4,15 @@
 
 ![Example Image](https://github.com/MarkJB/patterned-grid/blob/master/images/example_image.png)
 
-Experiment using ChatGPT (Started with GPT4, but ran up against the limits, wasn't perfect and needed some fixes, and there are some glitches that need addressing switched to GPT3.5, but that introduced a lot of problems so fixed manually).
+Experiment using ChatGPT (Started with GPT4, but ran up against the limits, wasn't perfect and needed some fixes, and there are some glitches that need addressing switched to GPT3.5, but that introduced a lot of problems so fixed manually). Further fixes were done with GPT4 and many weird CGPT ommisions fixed manually (it makes a lot of mistakes).
 
 Tiles consist of SVG arcs and lines or just lines. The tiles vary the direction of the lines (either vertical or horizontal) and then the whole tile is rotated at random and layed out in a grid.
 
-This is an attempt at reproducing generative art created by [Dan Catt](https://github.com/revdancatt)
+This is an attempt at reproducing generative art created by [Dan Catt](https://github.com/revdancatt). Why? Because I like the style and I wanted to see if I could reproduce it as technical challenge, a chance to understand the limits of ChatGPT and because I like the asthectic and wanted to plot some myself.
 
 ## Prerequisites
 
-Nothing special required to run the example, but you'll need a working [nodejs install](https://nodejs.org/en) if you want to modify the code
+Nothing special required to run the example, but you'll need a working [nodejs install](https://nodejs.org/en) if you want to build or modify the code
 
 ## Running
 
