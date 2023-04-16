@@ -17,8 +17,8 @@
 
   #grid {
   /* display: grid; */
-  width: 100%;
-  height: 100%;
+  /* width: auto;
+  height: auto; */
   grid-template-columns: repeat(auto-fill, 100px);
   grid-template-rows: repeat(auto-fill, 100px);
   /* grid-auto-flow: row; */

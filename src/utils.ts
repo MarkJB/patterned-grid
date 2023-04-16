@@ -62,3 +62,29 @@ export const joinClosePaths = (outerSVG: SVGSVGElement, threshold: number) => {
     }
   }
 };
+
+const webColors: string[] = [
+  "red",
+  "blue",
+  "teal",
+  "green",
+  "yellow",
+  "purple",
+  "aqua",
+  "fuchsia",
+  "lime",
+  "maroon",
+  "navy",
+  "olive",
+  "silver",
+  "gray",
+  "black",
+];
+
+export const getRandomColor = (exclude?: string): string => {
+  const filteredColors = exclude
+    ? webColors.filter((color) => color !== exclude)
+    : webColors;
+  const randomIndex = Math.floor(Math.random() * filteredColors.length);
+  return filteredColors[randomIndex];
+};

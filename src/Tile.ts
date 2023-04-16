@@ -70,18 +70,18 @@ class Tile {
     // const direction = Math.random() < 0.5 ? "horizontal" : "vertical";
     const direction = "horizontal";
 
-    const radii = calcSpacing(this.tileSize, this.numberOfLines);
+    const spacing = calcSpacing(this.tileSize, this.numberOfLines);
 
     // Draw the lines and add them to the linesGroup
-    for (const radius of radii) {
-      const lines = this.createPath(radius, direction);
+    for (const space of spacing) {
+      const lines = this.createPath(space, direction);
       linesGroup.appendChild(lines);
     }
 
     // If we are showing arcs on this tile,
     if (this.showArcs) {
       const arcCenter = { x: 0, y: 0 };
-      const largestRadius = radii[radii.length - 1];
+      const largestSpace = spacing[spacing.length - 1];
 
       // Convert the linesGroup.lines into an array
       Array.from(linesGroup.querySelectorAll("path")).forEach((line) => {
@@ -104,8 +104,7 @@ class Tile {
         const intersection = this.lineArcIntersection(
           lineStart,
           lineEnd,
-          arcCenter,
-          largestRadius
+          largestSpace
         );
 
         if (intersection) {
@@ -139,20 +138,20 @@ class Tile {
       });
 
       // for each radius in the radii array
-      for (const radius of radii) {
-        const arc = this.createArc(0, 0, radius, 0, 0 + 90);
+      for (const space of spacing) {
+        const arc = this.createArc(0, 0, space, 0, 0 + 90);
         group.appendChild(arc);
       }
     }
     return group;
   }
 
-  createLine(radius: number, direction: "horizontal" | "vertical"): SVGElement {
+  createLine(length: number, direction: "horizontal" | "vertical"): SVGElement {
     console.log(
       "Creating a single line with direction",
       direction,
       "and length",
-      radius
+      length
     );
     const lines = document.createElementNS("http://www.w3.org/2000/svg", "g");
     const lineOffset = 0;
@@ -164,16 +163,16 @@ class Tile {
     if (direction === "horizontal") {
       // Start of line
       line.setAttribute("x1", "0");
-      line.setAttribute("y1", String(radius));
+      line.setAttribute("y1", String(length));
       //   end of line
       line.setAttribute("x2", "100");
-      line.setAttribute("y2", String(radius));
+      line.setAttribute("y2", String(length));
     } else {
       // Start of line
-      line.setAttribute("x1", String(radius));
+      line.setAttribute("x1", String(length));
       line.setAttribute("y1", "0");
       //   end of line
-      line.setAttribute("x2", String(radius));
+      line.setAttribute("x2", String(length));
       line.setAttribute("y2", "100");
     }
 
@@ -186,12 +185,12 @@ class Tile {
   }
 
   // Maybe the line is causing problem? (I don't seem to be able to join a line to a path so make the lines paths?)
-  createPath(radius: number, direction: "horizontal" | "vertical"): SVGElement {
+  createPath(length: number, direction: "horizontal" | "vertical"): SVGElement {
     console.log(
       "Creating a single path with direction",
       direction,
       "and length",
-      radius
+      length
     );
     const paths = document.createElementNS("http://www.w3.org/2000/svg", "g");
     const pathOffset = 0;
@@ -202,9 +201,9 @@ class Tile {
     // Vertical Lines start at x1=radius y1=0 and finish at x2=radius, y2=100
     let d;
     if (direction === "horizontal") {
-      d = `M 0 ${radius} L 100 ${radius}`;
+      d = `M 0 ${length} L 100 ${length}`;
     } else {
-      d = `M ${radius} 0 L ${radius} 100`;
+      d = `M ${length} 0 L ${length} 100`;
     }
 
     path.setAttribute("d", d);
@@ -273,7 +272,6 @@ class Tile {
   lineArcIntersection(
     lineStart: { x: number; y: number },
     lineEnd: { x: number; y: number },
-    arcCenter: { x: number; y: number },
     arcRadius: number
   ): { x: number; y: number } | null {
     const dx = lineEnd.x - lineStart.x;
