@@ -3,8 +3,8 @@ import { joinClosePaths } from "./utils";
 
 // Create a grid of patterned tiles
 const grid = document.getElementById("grid");
-const numRows = 2;
-const numCols = 2;
+const numRows = 10;
+const numCols = 12;
 
 const outerSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 outerSVG.setAttribute("viewBox", `0 0 ${numCols * 100} ${numRows * 100}`);
@@ -12,6 +12,7 @@ outerSVG.setAttribute("width", "100%");
 outerSVG.setAttribute("height", "100%");
 outerSVG.setAttribute("xmlns", "http://www.w3.org/2000/svg");
 grid?.appendChild(outerSVG);
+// outerSVG.setAttribute("")
 
 // Loop to add tiles to a grid
 for (let row = 0; row < numRows; row++) {
@@ -24,7 +25,7 @@ for (let row = 0; row < numRows; row++) {
     const showArcs = Math.random() < 0.5;
 
     // Add a tile to the grid (all the work is done in the Tile class)
-    const tile = new Tile();
+    const tile = new Tile({ strokeWeight: 5, strokeColour: "teal" });
     // Define the SVG element using the tile content
     const tileGroup = tile.element;
     // Apply a grid offset and rotation to the tile
@@ -50,7 +51,7 @@ for (let row = 0; row < numRows; row++) {
   }
 }
 
-joinClosePaths(outerSVG, 5); // Add this line after creating the grid
+// joinClosePaths(outerSVG, 5); // Add this line after creating the grid
 
 // SVG Export (Save (Download) an SVG when the download button is clicked)
 const downloadButton = document.getElementById("download-svg");

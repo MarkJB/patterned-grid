@@ -1,21 +1,40 @@
 import SVG from "svg.js";
 import { parseSVG as parsePath } from "svg-path-parser";
 
+interface TileParams {
+  element?: SVGElement;
+  showArcs?: boolean;
+  tileSize?: number;
+  numberOfLines?: number;
+  rotation?: number;
+  strokeWeight?: number;
+  strokeColour?: string;
+}
+
 // Define the Tile class - arcs
 class Tile {
   element: SVGElement;
   showArcs: boolean;
   tileSize: number;
   numberOfLines: number;
+  rotation: number;
+  strokeWeight: number;
+  strokeColour: string;
 
-  constructor(
-    showArcs: boolean = true,
-    tileSize: number = 100,
-    numberOfLines: number = 10
-  ) {
+  constructor({
+    showArcs = true,
+    tileSize = 100,
+    numberOfLines = 10,
+    rotation = 0,
+    strokeWeight = 1,
+    strokeColour = "black",
+  }: TileParams) {
     this.showArcs = showArcs;
     this.tileSize = tileSize;
     this.numberOfLines = numberOfLines;
+    this.rotation = rotation;
+    this.strokeWeight = strokeWeight;
+    this.strokeColour = strokeColour;
     this.element = this.createTileElement();
   }
 
@@ -36,20 +55,22 @@ class Tile {
 
     // Instead of manually specifying the points for each Radii (arcRadii) we can
     // calculate that based on the size of the tile and the number of lines we want
-    const calcRadii = (size: number, qty: number): number[] => {
+
+    // Experiment with an offset so we don't always fill the tile
+    const calcSpacing = (size: number, qty: number): number[] => {
       const spacing = size / qty;
       console.log("CalcRadii, size", size, "quantity", qty, "spacing", spacing);
-      let arcRadii = [];
+      let spacingArray = [];
       for (let i = 0; i <= qty; i++) {
-        arcRadii.push(0 + i * spacing); // add each position to the array
+        spacingArray.push(0 + i * spacing); // add each position to the array
       }
-      return arcRadii;
+      return spacingArray;
     };
 
     // const direction = Math.random() < 0.5 ? "horizontal" : "vertical";
     const direction = "horizontal";
 
-    const radii = calcRadii(this.tileSize, this.numberOfLines);
+    const radii = calcSpacing(this.tileSize, this.numberOfLines);
 
     // Draw the lines and add them to the linesGroup
     for (const radius of radii) {
@@ -156,8 +177,8 @@ class Tile {
       line.setAttribute("y2", "100");
     }
 
-    line.setAttribute("stroke", "black");
-    line.setAttribute("stroke-width", "1");
+    line.setAttribute("stroke", this.strokeColour);
+    line.setAttribute("stroke-width", String(this.strokeWeight));
 
     lines.appendChild(line);
 
@@ -187,8 +208,10 @@ class Tile {
     }
 
     path.setAttribute("d", d);
-    path.setAttribute("stroke", "black");
-    path.setAttribute("stroke-width", "1");
+    path.setAttribute("stroke", this.strokeColour);
+    path.setAttribute("stroke-width", String(this.strokeWeight));
+    path.setAttribute("stroke-linecap", "round");
+    path.setAttribute("stroke-linejoin", "round");
     path.setAttribute("fill", "none");
 
     paths.appendChild(path);
@@ -226,8 +249,8 @@ class Tile {
 
     arc.setAttribute("d", d);
     arc.setAttribute("fill", "none");
-    arc.setAttribute("stroke", "black");
-    arc.setAttribute("stroke-width", "1");
+    arc.setAttribute("stroke", this.strokeColour);
+    arc.setAttribute("stroke-width", String(this.strokeWeight));
 
     return arc;
   }

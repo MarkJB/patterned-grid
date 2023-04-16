@@ -24,3 +24,9 @@
   /* grid-auto-flow: row; */
   grid-gap: 0; /* Adjust the gap between tiles if needed */
 }
+
+#controls {
+  padding-top: 0.5em;
+  padding-left: 0.5em;
+  padding-bottom: 2em;
+}
