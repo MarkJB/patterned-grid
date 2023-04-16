@@ -88,3 +88,23 @@ export const getRandomColor = (exclude?: string): string => {
   const randomIndex = Math.floor(Math.random() * filteredColors.length);
   return filteredColors[randomIndex];
 };
+
+export const paletteColors: string[] = [
+  "black",
+  "navy",
+  "blue",
+  "teal",
+  "aqua",
+  "teal",
+  "blue",
+  "navy",
+  "black",
+];
+
+export const getmColor = (exclude?: string): string => {
+  const filteredColors = exclude
+    ? webColors.filter((color) => color !== exclude)
+    : webColors;
+  const randomIndex = Math.floor(Math.random() * filteredColors.length);
+  return filteredColors[randomIndex];
+};

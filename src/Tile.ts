@@ -1,5 +1,6 @@
 import SVG from "svg.js";
 import { parseSVG as parsePath } from "svg-path-parser";
+import { getRandomColor, paletteColors } from "./utils";
 
 interface TileParams {
   element?: SVGElement;
@@ -24,7 +25,7 @@ class Tile {
   constructor({
     showArcs = true,
     tileSize = 100,
-    numberOfLines = 10,
+    numberOfLines = 9,
     rotation = 0,
     strokeWeight = 1,
     strokeColour = "black",
@@ -71,6 +72,17 @@ class Tile {
     const direction = "horizontal";
 
     const spacing = calcSpacing(this.tileSize, this.numberOfLines);
+
+    // Colour infill lines
+    for (let i = 0; i < spacing.slice(0, spacing.length - 1).length; i++) {
+      const lines = this.createPath(
+        spacing[i] + 5.5,
+        direction,
+        9,
+        paletteColors[i]
+      );
+      group.appendChild(lines);
+    }
 
     // Draw the lines and add them to the linesGroup
     for (const space of spacing) {
@@ -137,9 +149,34 @@ class Tile {
         }
       });
 
+      // Can we fill the space between with a different colour?
+      // for (const space of spacing.slice(0, 10)) {
+      //   const arc = this.createArc(
+      //     0,
+      //     0,
+      //     space + 5,
+      //     0,
+      //     0 + 90,
+      //     8,
+      //     getRandomColor()
+      //   );
+      //   group.appendChild(arc);
+      // }
+      for (let i = 0; i < spacing.slice(0, spacing.length - 1).length; i++) {
+        const arc = this.createArc(
+          0,
+          0,
+          spacing[i] + 5.5,
+          0,
+          0 + 90,
+          8,
+          paletteColors[i]
+        );
+        group.appendChild(arc);
+      }
       // for each radius in the radii array
       for (const space of spacing) {
-        const arc = this.createArc(0, 0, space, 0, 0 + 90);
+        const arc = this.createArc(0, 0, space, 0, 0 + 90, 3);
         group.appendChild(arc);
       }
     }
@@ -185,7 +222,12 @@ class Tile {
   }
 
   // Maybe the line is causing problem? (I don't seem to be able to join a line to a path so make the lines paths?)
-  createPath(length: number, direction: "horizontal" | "vertical"): SVGElement {
+  createPath(
+    length: number,
+    direction: "horizontal" | "vertical",
+    strokeWeight?: number,
+    strokeColour?: string
+  ): SVGElement {
     console.log(
       "Creating a single path with direction",
       direction,
@@ -196,7 +238,6 @@ class Tile {
     const pathOffset = 0;
 
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-
     // Horizontal Lines start at x1=0 y1=radius and finish at x2=100, y2=radius
     // Vertical Lines start at x1=radius y1=0 and finish at x2=radius, y2=100
     let d;
@@ -207,8 +248,14 @@ class Tile {
     }
 
     path.setAttribute("d", d);
-    path.setAttribute("stroke", this.strokeColour);
-    path.setAttribute("stroke-width", String(this.strokeWeight));
+    path.setAttribute(
+      "stroke",
+      strokeColour ? strokeColour : this.strokeColour
+    );
+    path.setAttribute(
+      "stroke-width",
+      strokeWeight ? String(strokeWeight) : String(this.strokeWeight)
+    );
     path.setAttribute("stroke-linecap", "round");
     path.setAttribute("stroke-linejoin", "round");
     path.setAttribute("fill", "none");
@@ -224,7 +271,9 @@ class Tile {
     cy: number,
     r: number,
     startAngle: number,
-    endAngle: number
+    endAngle: number,
+    strokeWeight?: number,
+    strokeColour?: string
   ): SVGElement {
     const startPoint = this.polarToCartesian(cx, cy, r, startAngle);
     const endPoint = this.polarToCartesian(cx, cy, r, endAngle);
@@ -248,8 +297,11 @@ class Tile {
 
     arc.setAttribute("d", d);
     arc.setAttribute("fill", "none");
-    arc.setAttribute("stroke", this.strokeColour);
-    arc.setAttribute("stroke-width", String(this.strokeWeight));
+    arc.setAttribute("stroke", strokeColour ? strokeColour : this.strokeColour);
+    arc.setAttribute(
+      "stroke-width",
+      strokeWeight ? String(strokeWeight) : String(this.strokeWeight)
+    );
 
     return arc;
   }

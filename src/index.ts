@@ -22,13 +22,13 @@ backgroundRect.setAttribute("width", "100%");
 backgroundRect.setAttribute("height", "100%");
 
 const backgroundColour = getRandomColor();
-backgroundRect.setAttribute("fill", backgroundColour);
+backgroundRect.setAttribute("fill", "white");
 
 // Add the background rect to the SVG
 outerSVG.appendChild(backgroundRect);
 // outerSVG.setAttribute("")
-const strokeColour = getRandomColor(backgroundColour);
-const strokeWeight = Math.floor(Math.random() * 8) + 1;
+// const strokeColour = getRandomColor(backgroundColour);
+// const strokeWeight = Math.floor(Math.random() * 8) + 1;
 // Loop to add tiles to a grid
 for (let row = 0; row < numRows; row++) {
   for (let col = 0; col < numCols; col++) {
@@ -41,8 +41,8 @@ for (let row = 0; row < numRows; row++) {
 
     // Add a tile to the grid (all the work is done in the Tile class)
     const tile = new Tile({
-      strokeWeight,
-      strokeColour,
+      strokeWeight: 2,
+      strokeColour: "black",
     });
     // Define the SVG element using the tile content
     const tileGroup = tile.element;
