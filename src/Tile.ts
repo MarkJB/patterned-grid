@@ -53,7 +53,7 @@ class Tile {
 
     // Draw the lines and add them to the linesGroup
     for (const radius of radii) {
-      const lines = this.createLine(radius, direction);
+      const lines = this.createPath(radius, direction);
       linesGroup.appendChild(lines);
     }
 
@@ -63,17 +63,22 @@ class Tile {
       const largestRadius = radii[radii.length - 1];
 
       // Convert the linesGroup.lines into an array
-      Array.from(linesGroup.querySelectorAll("line")).forEach((line) => {
+      Array.from(linesGroup.querySelectorAll("path")).forEach((line) => {
         // Extract the line start and end for the current line
         const lineStart = {
-          x: parseFloat(line.getAttribute("x1") as string),
-          y: parseFloat(line.getAttribute("y1") as string),
+          x: parseFloat(line.getAttribute("d")?.split(" ")[1] as string),
+          y: parseFloat(line.getAttribute("d")?.split(" ")[2] as string),
+          // x: parseFloat(line.getAttribute("x1") as string),
+          // y: parseFloat(line.getAttribute("y1") as string),
         };
         const lineEnd = {
-          x: parseFloat(line.getAttribute("x2") as string),
-          y: parseFloat(line.getAttribute("y2") as string),
+          x: parseFloat(line.getAttribute("d")?.split(" ")[4] as string),
+          y: parseFloat(line.getAttribute("d")?.split(" ")[5] as string),
+          // x: parseFloat(line.getAttribute("x2") as string),
+          // y: parseFloat(line.getAttribute("y2") as string),
         };
 
+        console.log("Line start:", lineStart, "Line end:", lineEnd);
         // Determine if there is an intersection for the current line
         const intersection = this.lineArcIntersection(
           lineStart,
@@ -84,8 +89,29 @@ class Tile {
 
         if (intersection) {
           console.log("Intersection found", intersection);
-          line.setAttribute("x1", String(intersection.x));
-          line.setAttribute("y1", String(intersection.y));
+          console.log(
+            "Modify lines 'd' attribute '",
+            line.getAttribute("d"),
+            "'"
+          );
+          console.log(
+            "Updating arrtibute with this: `",
+            `M ${intersection.x} ${intersection.y} ${line
+              .getAttribute("d")
+              ?.split(" ")
+              .slice(4, 6)
+              .join(" ")}`,
+            "'"
+          );
+          line.setAttribute(
+            "d",
+            `M ${intersection.x} ${intersection.y} ${line
+              .getAttribute("d")
+              ?.split(" ")
+              .slice(4, 6)
+              .join(" ")}`
+          );
+          // line.setAttribute("y1", String(intersection.y));
         } else {
           console.log("No intersection found");
         }
@@ -136,6 +162,38 @@ class Tile {
     lines.appendChild(line);
 
     return lines;
+  }
+
+  // Maybe the line is causing problem? (I don't seem to be able to join a line to a path so make the lines paths?)
+  createPath(radius: number, direction: "horizontal" | "vertical"): SVGElement {
+    console.log(
+      "Creating a single path with direction",
+      direction,
+      "and length",
+      radius
+    );
+    const paths = document.createElementNS("http://www.w3.org/2000/svg", "g");
+    const pathOffset = 0;
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+
+    // Horizontal Lines start at x1=0 y1=radius and finish at x2=100, y2=radius
+    // Vertical Lines start at x1=radius y1=0 and finish at x2=radius, y2=100
+    let d;
+    if (direction === "horizontal") {
+      d = `M 0 ${radius} L 100 ${radius}`;
+    } else {
+      d = `M ${radius} 0 L ${radius} 100`;
+    }
+
+    path.setAttribute("d", d);
+    path.setAttribute("stroke", "black");
+    path.setAttribute("stroke-width", "1");
+    path.setAttribute("fill", "none");
+
+    paths.appendChild(path);
+
+    return paths;
   }
 
   // return an SVG arc for the given start coordinates and radius between the start and end angle
