@@ -1,15 +1,18 @@
 import SVG from "svg.js";
 import { parseSVG as parsePath } from "svg-path-parser";
-import { getRandomColor, paletteColors } from "./utils";
+import { getColorPallete, getRandomColor } from "./utils";
 
 interface TileParams {
   element?: SVGElement;
   showArcs?: boolean;
   tileSize?: number;
   numberOfLines?: number;
+  linesRandomDirection?: boolean;
   rotation?: number;
-  strokeWeight?: number;
-  strokeColour?: string;
+  outlineStrokeWeight?: number;
+  outlineStrokeColour?: string;
+  infillStrokeWeight?: number;
+  infillStrokeColour?: string;
 }
 
 // Define the Tile class - arcs
@@ -18,25 +21,38 @@ class Tile {
   showArcs: boolean;
   tileSize: number;
   numberOfLines: number;
+  linesRandomDirection: boolean;
   rotation: number;
-  strokeWeight: number;
-  strokeColour: string;
+  outlineStrokeWeight: number;
+  outlineStrokeColour: string;
+  infillStrokeWeight: number;
+  infillStrokeColour: string;
+  defaultStrokeWeight: number;
+  defaultStrokeColour: string;
 
   constructor({
     showArcs = true,
     tileSize = 100,
-    numberOfLines = 9,
+    numberOfLines = 10,
+    linesRandomDirection = true,
     rotation = 0,
-    strokeWeight = 1,
-    strokeColour = "black",
+    outlineStrokeWeight = 1,
+    outlineStrokeColour = "black",
+    infillStrokeWeight = 0,
+    infillStrokeColour = "black",
   }: TileParams) {
     this.showArcs = showArcs;
     this.tileSize = tileSize;
     this.numberOfLines = numberOfLines;
+    this.linesRandomDirection = linesRandomDirection;
     this.rotation = rotation;
-    this.strokeWeight = strokeWeight;
-    this.strokeColour = strokeColour;
+    this.outlineStrokeWeight = outlineStrokeWeight;
+    this.outlineStrokeColour = outlineStrokeColour;
+    this.infillStrokeWeight = infillStrokeWeight;
+    this.infillStrokeColour = infillStrokeColour;
     this.element = this.createTileElement();
+    this.defaultStrokeWeight = 2;
+    this.defaultStrokeColour = "black";
   }
 
   createTileElement(): SVGElement {
@@ -60,39 +76,85 @@ class Tile {
     // Experiment with an offset so we don't always fill the tile
     const calcSpacing = (size: number, qty: number): number[] => {
       const spacing = size / qty;
-      console.log("CalcRadii, size", size, "quantity", qty, "spacing", spacing);
+      console.log(
+        "Calc spacing, Tile size",
+        size,
+        "quantity of lines",
+        qty,
+        "gap between",
+        spacing,
+        "Last coord",
+        spacing * qty
+      );
       let spacingArray = [];
-      for (let i = 0; i <= qty; i++) {
-        spacingArray.push(0 + i * spacing); // add each position to the array
+      for (let i = 1; i <= qty; i++) {
+        spacingArray.push(i * spacing); // add each position to the array
       }
       return spacingArray;
     };
 
+    let direction: "horizontal" | "vertical";
+    if (this.linesRandomDirection) {
+      direction = Math.random() < 0.5 ? "horizontal" : "vertical";
+    } else {
+      direction = "horizontal";
+    }
     // const direction = Math.random() < 0.5 ? "horizontal" : "vertical";
-    const direction = "horizontal";
+    // const direction = "horizontal";
 
+    // Spacing - Calculate the gap between lines for a given tile size and number of lines
     const spacing = calcSpacing(this.tileSize, this.numberOfLines);
 
-    // Colour infill lines
-    for (let i = 0; i < spacing.slice(0, spacing.length - 1).length; i++) {
-      const lines = this.createPath(
-        spacing[i] + 5.5,
+    // Infill width should be the difference between the spacing and the outline stroke weight
+    const calculatedInfillStrokeWeight = spacing[1]; //- this.outlineStrokeWeight + this.outlineStrokeWeight / 2;
+    console.log(
+      "Spacing[1]",
+      spacing[1],
+      "this.outlineStrokeWeight",
+      this.outlineStrokeWeight,
+      "Calculated infill stroke",
+      calculatedInfillStrokeWeight
+    );
+
+    // Colour infill lines - Add line that act as coloured in-fill (can't apply fill to an open path)
+    for (let i = 0; i < spacing.length; i++) {
+      console.log(
+        "Getting colour pallete",
+        i,
+        getColorPallete("ppP47")[i],
+        "direction",
         direction,
-        9,
-        paletteColors[i]
+        "spacing",
+        spacing[i]
+      );
+      const line = this.createPath(
+        spacing[i], // position
+        direction,
+        calculatedInfillStrokeWeight, // stroke weight
+        getColorPallete("ppP47")[i]
+      );
+      group.appendChild(line);
+    }
+
+    // Draw the 'solid' lines (the primary set of lines - not the in-fill) and add them to the linesGroup
+    for (const space of spacing) {
+      const lines = this.createPath(
+        space - this.outlineStrokeWeight / 2,
+        direction,
+        this.outlineStrokeWeight,
+        this.outlineStrokeColour
       );
       group.appendChild(lines);
     }
 
-    // Draw the lines and add them to the linesGroup
-    for (const space of spacing) {
-      const lines = this.createPath(space, direction);
-      linesGroup.appendChild(lines);
-    }
-
-    // If we are showing arcs on this tile,
+    // If we are showing arcs on this tile, this is where we add them
+    // but also where we shorten the straight lines where they intersect with the largest arc
     if (this.showArcs) {
-      const arcCenter = { x: 0, y: 0 };
+      const arcCenter = {
+        x: 0,
+        y: 0,
+      };
+      console.log("Spacing", spacing);
       const largestSpace = spacing[spacing.length - 1];
 
       // Convert the linesGroup.lines into an array
@@ -101,17 +163,13 @@ class Tile {
         const lineStart = {
           x: parseFloat(line.getAttribute("d")?.split(" ")[1] as string),
           y: parseFloat(line.getAttribute("d")?.split(" ")[2] as string),
-          // x: parseFloat(line.getAttribute("x1") as string),
-          // y: parseFloat(line.getAttribute("y1") as string),
         };
         const lineEnd = {
           x: parseFloat(line.getAttribute("d")?.split(" ")[4] as string),
           y: parseFloat(line.getAttribute("d")?.split(" ")[5] as string),
-          // x: parseFloat(line.getAttribute("x2") as string),
-          // y: parseFloat(line.getAttribute("y2") as string),
         };
 
-        console.log("Line start:", lineStart, "Line end:", lineEnd);
+        // console.log("Line start:", lineStart, "Line end:", lineEnd);
         // Determine if there is an intersection for the current line
         const intersection = this.lineArcIntersection(
           lineStart,
@@ -119,22 +177,8 @@ class Tile {
           largestSpace
         );
 
+        // If there is an intersection for the current line, modify it so the line starts at the intersection
         if (intersection) {
-          console.log("Intersection found", intersection);
-          console.log(
-            "Modify lines 'd' attribute '",
-            line.getAttribute("d"),
-            "'"
-          );
-          console.log(
-            "Updating arrtibute with this: `",
-            `M ${intersection.x} ${intersection.y} ${line
-              .getAttribute("d")
-              ?.split(" ")
-              .slice(4, 6)
-              .join(" ")}`,
-            "'"
-          );
           line.setAttribute(
             "d",
             `M ${intersection.x} ${intersection.y} ${line
@@ -143,82 +187,40 @@ class Tile {
               .slice(4, 6)
               .join(" ")}`
           );
-          // line.setAttribute("y1", String(intersection.y));
-        } else {
-          console.log("No intersection found");
         }
       });
 
-      // Can we fill the space between with a different colour?
-      // for (const space of spacing.slice(0, 10)) {
-      //   const arc = this.createArc(
-      //     0,
-      //     0,
-      //     space + 5,
-      //     0,
-      //     0 + 90,
-      //     8,
-      //     getRandomColor()
-      //   );
-      //   group.appendChild(arc);
-      // }
+      // Arc (curves) in-fill (the coloured arcs as per the coloured in-fill lines)
       for (let i = 0; i < spacing.slice(0, spacing.length - 1).length; i++) {
         const arc = this.createArc(
           0,
           0,
-          spacing[i] + 5.5,
+          spacing[i] - this.infillStrokeWeight / 2,
           0,
           0 + 90,
-          8,
-          paletteColors[i]
+          this.infillStrokeWeight > calculatedInfillStrokeWeight
+            ? this.infillStrokeWeight
+            : calculatedInfillStrokeWeight,
+          getColorPallete("ppP47")[i] // We will want to switch between a pallete and a single colour at some point - how?
         );
         group.appendChild(arc);
       }
-      // for each radius in the radii array
+
+      // Arcs (curves) primary colour (the solid lines or outlines)
       for (const space of spacing) {
-        const arc = this.createArc(0, 0, space, 0, 0 + 90, 3);
+        const arc = this.createArc(
+          0,
+          0,
+          space - this.outlineStrokeWeight / 2,
+          0,
+          0 + 90,
+          this.outlineStrokeWeight,
+          this.outlineStrokeColour
+        );
         group.appendChild(arc);
       }
     }
     return group;
-  }
-
-  createLine(length: number, direction: "horizontal" | "vertical"): SVGElement {
-    console.log(
-      "Creating a single line with direction",
-      direction,
-      "and length",
-      length
-    );
-    const lines = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    const lineOffset = 0;
-
-    const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-
-    // Horizontal Lines start at x1=0 y1=radius and finish at x2=100, y2=radius
-    // Vertical Lines start at x1=radius y1=0 and finish at x2=radius, y2=100
-    if (direction === "horizontal") {
-      // Start of line
-      line.setAttribute("x1", "0");
-      line.setAttribute("y1", String(length));
-      //   end of line
-      line.setAttribute("x2", "100");
-      line.setAttribute("y2", String(length));
-    } else {
-      // Start of line
-      line.setAttribute("x1", String(length));
-      line.setAttribute("y1", "0");
-      //   end of line
-      line.setAttribute("x2", String(length));
-      line.setAttribute("y2", "100");
-    }
-
-    line.setAttribute("stroke", this.strokeColour);
-    line.setAttribute("stroke-width", String(this.strokeWeight));
-
-    lines.appendChild(line);
-
-    return lines;
   }
 
   // Maybe the line is causing problem? (I don't seem to be able to join a line to a path so make the lines paths?)
@@ -228,12 +230,12 @@ class Tile {
     strokeWeight?: number,
     strokeColour?: string
   ): SVGElement {
-    console.log(
-      "Creating a single path with direction",
-      direction,
-      "and length",
-      length
-    );
+    // console.log(
+    //   "Creating a single path with direction",
+    //   direction,
+    //   "and length",
+    //   length
+    // );
     const paths = document.createElementNS("http://www.w3.org/2000/svg", "g");
     const pathOffset = 0;
 
@@ -248,16 +250,13 @@ class Tile {
     }
 
     path.setAttribute("d", d);
-    path.setAttribute(
-      "stroke",
-      strokeColour ? strokeColour : this.strokeColour
-    );
+    path.setAttribute("stroke", strokeColour || this.defaultStrokeColour);
     path.setAttribute(
       "stroke-width",
-      strokeWeight ? String(strokeWeight) : String(this.strokeWeight)
+      String(strokeWeight) || String(this.defaultStrokeWeight)
     );
-    path.setAttribute("stroke-linecap", "round");
-    path.setAttribute("stroke-linejoin", "round");
+    // path.setAttribute("stroke-linecap", "round");
+    // path.setAttribute("stroke-linejoin", "round");
     path.setAttribute("fill", "none");
 
     paths.appendChild(path);
@@ -297,10 +296,10 @@ class Tile {
 
     arc.setAttribute("d", d);
     arc.setAttribute("fill", "none");
-    arc.setAttribute("stroke", strokeColour ? strokeColour : this.strokeColour);
+    arc.setAttribute("stroke", strokeColour || this.defaultStrokeColour);
     arc.setAttribute(
       "stroke-width",
-      strokeWeight ? String(strokeWeight) : String(this.strokeWeight)
+      String(strokeWeight) || String(this.defaultStrokeWeight)
     );
 
     return arc;

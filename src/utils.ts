@@ -63,48 +63,41 @@ export const joinClosePaths = (outerSVG: SVGSVGElement, threshold: number) => {
   }
 };
 
-const webColors: string[] = [
-  "red",
-  "blue",
-  "teal",
-  "green",
-  "yellow",
-  "purple",
-  "aqua",
-  "fuchsia",
-  "lime",
-  "maroon",
-  "navy",
-  "olive",
-  "silver",
-  "gray",
-  "black",
-];
-
 export const getRandomColor = (exclude?: string): string => {
   const filteredColors = exclude
-    ? webColors.filter((color) => color !== exclude)
-    : webColors;
+    ? getColorPallete("basic").filter((color) => color !== exclude)
+    : getColorPallete("basic");
   const randomIndex = Math.floor(Math.random() * filteredColors.length);
   return filteredColors[randomIndex];
 };
 
-export const paletteColors: string[] = [
-  "black",
-  "navy",
-  "blue",
-  "teal",
-  "aqua",
-  "teal",
-  "blue",
-  "navy",
-  "black",
-];
+type PaletteColors = {
+  [key: string]: string[];
+};
 
-export const getmColor = (exclude?: string): string => {
-  const filteredColors = exclude
-    ? webColors.filter((color) => color !== exclude)
-    : webColors;
-  const randomIndex = Math.floor(Math.random() * filteredColors.length);
-  return filteredColors[randomIndex];
+const paletteColors: PaletteColors = {
+  basic: [
+    "black",
+    "navy",
+    "blue",
+    "teal",
+    "aqua",
+    "teal",
+    "blue",
+    "navy",
+    "black",
+  ],
+  ppP47: [
+    "rgb(166,217,226)",
+    "rgb(248,171,30)",
+    "rgb(250,210,219)",
+    "rgb(231,35,133)",
+    "rgb(250,210,219)",
+    "rgb(248,171,30)",
+    "rgb(166,217,226)",
+  ],
+};
+
+export const getColorPallete = (name: string): string[] => {
+  return paletteColors[name];
 };

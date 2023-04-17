@@ -3,8 +3,8 @@ import { getRandomColor, joinClosePaths } from "./utils";
 
 // Create a grid of patterned tiles
 const grid = document.getElementById("grid");
-const numRows = 10;
-const numCols = 12;
+const numRows = 4;
+const numCols = 4;
 
 const outerSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 outerSVG.setAttribute("viewBox", `0 0 ${numCols * 100} ${numRows * 100}`);
@@ -38,11 +38,17 @@ for (let row = 0; row < numRows; row++) {
 
     // Randomly decide whether to show arcs (defaults to true)
     const showArcs = Math.random() < 0.5;
+    // const showArcs = false;
 
     // Add a tile to the grid (all the work is done in the Tile class)
     const tile = new Tile({
-      strokeWeight: 2,
-      strokeColour: "black",
+      showArcs,
+      rotation,
+      linesRandomDirection: false,
+      numberOfLines: 7,
+      outlineStrokeWeight: 4,
+      outlineStrokeColour: "black",
+      infillStrokeWeight: 8,
     });
     // Define the SVG element using the tile content
     const tileGroup = tile.element;
