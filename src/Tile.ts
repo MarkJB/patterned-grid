@@ -2,6 +2,11 @@ import SVG from "svg.js";
 import { parseSVG as parsePath } from "svg-path-parser";
 import { getColorPallete, getRandomColor } from "./utils";
 
+type LineStartEnd = {
+  lineStart: { x: number; y: number };
+  lineEnd: { x: number; y: number };
+};
+
 interface TileParams {
   element?: SVGElement;
   showArcs?: boolean;
@@ -56,8 +61,17 @@ class Tile {
   }
 
   createTileElement(): SVGElement {
-    const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    group.setAttribute("class", "tile");
+    const outlineGroup = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "g"
+    );
+    outlineGroup.setAttribute("class", "tile");
+
+    const infillGroup = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "g"
+    );
+    infillGroup.setAttribute("class", "tile");
 
     const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svg.setAttribute("viewBox", "0 0 100 100");
@@ -68,7 +82,8 @@ class Tile {
       "http://www.w3.org/2000/svg",
       "g"
     );
-    group.appendChild(linesGroup);
+    infillGroup.setAttribute("class", "tile");
+    // group.appendChild(linesGroup);
 
     // Instead of manually specifying the points for each Radii (arcRadii) we can
     // calculate that based on the size of the tile and the number of lines we want
@@ -106,7 +121,7 @@ class Tile {
     const spacing = calcSpacing(this.tileSize, this.numberOfLines);
 
     // Infill width should be the difference between the spacing and the outline stroke weight
-    const calculatedInfillStrokeWeight = spacing[1]; //- this.outlineStrokeWeight + this.outlineStrokeWeight / 2;
+    const calculatedInfillStrokeWeight = spacing[1] / 2; //+ this.outlineStrokeWeight / 2;
     console.log(
       "Spacing[1]",
       spacing[1],
@@ -116,35 +131,56 @@ class Tile {
       calculatedInfillStrokeWeight
     );
 
+    // Order matters! SVGs are layered, one thing over another will hide the thing below it.
     // Colour infill lines - Add line that act as coloured in-fill (can't apply fill to an open path)
     for (let i = 0; i < spacing.length; i++) {
       console.log(
         "Getting colour pallete",
         i,
-        getColorPallete("ppP47")[i],
+        getColorPallete("ppP50")[i],
         "direction",
         direction,
         "spacing",
         spacing[i]
       );
       const line = this.createPath(
-        spacing[i], // position
+        spacing[i] - calculatedInfillStrokeWeight / 2, // position
         direction,
         calculatedInfillStrokeWeight, // stroke weight
-        getColorPallete("ppP47")[i]
+        getColorPallete("ppP50")[i]
       );
-      group.appendChild(line);
+      infillGroup.appendChild(line);
     }
 
     // Draw the 'solid' lines (the primary set of lines - not the in-fill) and add them to the linesGroup
-    for (const space of spacing) {
-      const lines = this.createPath(
-        space - this.outlineStrokeWeight / 2,
-        direction,
-        this.outlineStrokeWeight,
-        this.outlineStrokeColour
-      );
-      group.appendChild(lines);
+    // The first and last line should be half on or off the tile so things overlap correctly. That means
+    // there is one more line than the number specified. The in-fill lines will be the correct number
+    // for (const space of spacing) {
+    for (let i = 0; i <= spacing.length; i++) {
+      let space;
+      if (i >= spacing.length) {
+        space = 0;
+        console.log("Adding the single odd line at", space);
+        const line = this.createPath(
+          space,
+          direction,
+          this.outlineStrokeWeight,
+          this.outlineStrokeColour
+        );
+        outlineGroup.appendChild(line);
+      } else {
+        space = spacing[i];
+        console.log("Adding the next line at", space);
+        const line = this.createPath(
+          space + spacing[0] / 2,
+          direction,
+          this.outlineStrokeWeight,
+          this.outlineStrokeColour
+        );
+        outlineGroup.appendChild(line);
+      }
+
+      console.log("Number of outlines", outlineGroup.children.length);
     }
 
     // If we are showing arcs on this tile, this is where we add them
@@ -158,7 +194,7 @@ class Tile {
       const largestSpace = spacing[spacing.length - 1];
 
       // Convert the linesGroup.lines into an array
-      Array.from(linesGroup.querySelectorAll("path")).forEach((line) => {
+      Array.from(outlineGroup.querySelectorAll("path")).forEach((line) => {
         // Extract the line start and end for the current line
         const lineStart = {
           x: parseFloat(line.getAttribute("d")?.split(" ")[1] as string),
@@ -191,19 +227,19 @@ class Tile {
       });
 
       // Arc (curves) in-fill (the coloured arcs as per the coloured in-fill lines)
-      for (let i = 0; i < spacing.slice(0, spacing.length - 1).length; i++) {
+      for (let i = 0; i < spacing.length; i++) {
         const arc = this.createArc(
           0,
           0,
-          spacing[i] - this.infillStrokeWeight / 2,
+          spacing[i] - calculatedInfillStrokeWeight / 2,
           0,
           0 + 90,
           this.infillStrokeWeight > calculatedInfillStrokeWeight
             ? this.infillStrokeWeight
             : calculatedInfillStrokeWeight,
-          getColorPallete("ppP47")[i] // We will want to switch between a pallete and a single colour at some point - how?
+          getColorPallete("ppP50")[i] // We will want to switch between a pallete and a single colour at some point - how?
         );
-        group.appendChild(arc);
+        infillGroup.appendChild(arc);
       }
 
       // Arcs (curves) primary colour (the solid lines or outlines)
@@ -217,10 +253,13 @@ class Tile {
           this.outlineStrokeWeight,
           this.outlineStrokeColour
         );
-        group.appendChild(arc);
+        outlineGroup.appendChild(arc);
       }
     }
-    return group;
+
+    linesGroup.appendChild(infillGroup);
+    // linesGroup.appendChild(outlineGroup);
+    return linesGroup;
   }
 
   // Maybe the line is causing problem? (I don't seem to be able to join a line to a path so make the lines paths?)
@@ -230,12 +269,14 @@ class Tile {
     strokeWeight?: number,
     strokeColour?: string
   ): SVGElement {
-    // console.log(
-    //   "Creating a single path with direction",
-    //   direction,
-    //   "and length",
-    //   length
-    // );
+    console.log(
+      "Creating a single path with direction",
+      direction,
+      "and length",
+      length,
+      "Stroke-wdith",
+      strokeWeight
+    );
     const paths = document.createElementNS("http://www.w3.org/2000/svg", "g");
     const pathOffset = 0;
 

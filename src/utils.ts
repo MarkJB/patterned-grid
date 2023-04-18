@@ -96,6 +96,15 @@ const paletteColors: PaletteColors = {
     "rgb(248,171,30)",
     "rgb(166,217,226)",
   ],
+  ppP50: [
+    "rgb(242,195,219)",
+    "rgb(218,228,151)",
+    "rgb(120,172,215)",
+    "rgb(248,171,30)",
+    "rgb(120,172,215)",
+    "rgb(218,228,151)",
+    "rgb(242,195,219)",
+  ],
 };
 
 export const getColorPallete = (name: string): string[] => {
