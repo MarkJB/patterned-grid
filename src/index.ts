@@ -1,9 +1,10 @@
 import Tile from "./Tile";
+import { joinClosePaths } from "./utils";
 
 // Create a grid of patterned tiles
 const grid = document.getElementById("grid");
-const numRows = 10;
-const numCols = 12;
+const numRows = 2;
+const numCols = 2;
 
 const outerSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 outerSVG.setAttribute("viewBox", `0 0 ${numCols * 100} ${numRows * 100}`);
@@ -27,14 +28,29 @@ for (let row = 0; row < numRows; row++) {
     // Define the SVG element using the tile content
     const tileGroup = tile.element;
     // Apply a grid offset and rotation to the tile
-    tileGroup.setAttribute(
-      "transform",
-      `translate(${col * 100} ${row * 100}) rotate(${rotation} 50 50)`
-    );
+    // tileGroup.setAttribute(
+    //   "transform",
+    //   `translate(${col * 100} ${row * 100}) rotate(${rotation} 50 50)`
+    // );
     // Append the SVG element 'tileGroup' to the SVG
-    outerSVG?.appendChild(tileGroup);
+    // outerSVG?.appendChild(tileGroup);
+    // Iterate through the children of tileGroup and append them directly to outerSVG
+    while (tileGroup.firstChild) {
+      const child = tileGroup.firstChild;
+      // Check if the child is an SVGElement
+      if (child instanceof SVGElement) {
+        // Apply a grid offset and rotation to the child element
+        child.setAttribute(
+          "transform",
+          `translate(${col * 100} ${row * 100}) rotate(${rotation} 50 50)`
+        );
+      }
+      outerSVG?.appendChild(child);
+    }
   }
 }
+
+joinClosePaths(outerSVG, 5); // Add this line after creating the grid
 
 // SVG Export (Save (Download) an SVG when the download button is clicked)
 const downloadButton = document.getElementById("download-svg");
