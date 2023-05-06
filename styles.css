@@ -1,26 +1,23 @@
-.tile-container {
-    position: relative;
-  }
-  
-  .tile {
-    /* position: absolute; */
-    /* width: 100px;
-    height: 100px;
-     */
-     vertical-align: top;
-  }
-    .tile-overlay {
-    position: absolute;
-    width: 100px;
-    height: 100px;
-  }
+.tile {
+  /* position: absolute; */
+  /* width: 100px;
+  height: 100px;
+  */
+  /* vertical-align: top; */
+}
 
-  #grid {
-  /* display: grid; */
-  width: 100%;
-  height: 100%;
-  grid-template-columns: repeat(auto-fill, 100px);
-  grid-template-rows: repeat(auto-fill, 100px);
+#grid {
+  display: flexbox;
+  width: auto;
+  height: auto; 
+  /* grid-template-columns: repeat(auto-fill, 100px); */
+  /* grid-template-rows: repeat(auto-fill, 100px); */
   /* grid-auto-flow: row; */
-  grid-gap: 0; /* Adjust the gap between tiles if needed */
+  /* grid-gap: 1; Adjust the gap between tiles if needed */
+}
+
+#controls {
+  padding-top: 0.5em;
+  padding-left: 0.5em;
+  padding-bottom: 2em;
 }
