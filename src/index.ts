@@ -31,6 +31,7 @@ for (let row = 0; row < numRows; row++) {
       "transform",
       `translate(${col * 100} ${row * 100}) rotate(${rotation} 50 50)`
     );
+    // tileGroup.setAttribute("class", "tile");
     // Append the SVG element 'tileGroup' to the SVG
     outerSVG?.appendChild(tileGroup);
   }

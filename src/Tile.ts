@@ -23,17 +23,6 @@ class Tile {
     const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
     group.setAttribute("class", "tile");
 
-    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute("viewBox", "0 0 100 100");
-    svg.setAttribute("width", "100");
-    svg.setAttribute("height", "100");
-
-    const linesGroup = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "g"
-    );
-    group.appendChild(linesGroup);
-
     // Instead of manually specifying the points for each Radii (arcRadii) we can
     // calculate that based on the size of the tile and the number of lines we want
     const calcRadii = (size: number, qty: number): number[] => {
@@ -54,7 +43,7 @@ class Tile {
     // Draw the lines and add them to the linesGroup
     for (const radius of radii) {
       const lines = this.createLine(radius, direction);
-      linesGroup.appendChild(lines);
+      group.appendChild(lines);
     }
 
     // If we are showing arcs on this tile,
@@ -63,7 +52,7 @@ class Tile {
       const largestRadius = radii[radii.length - 1];
 
       // Convert the linesGroup.lines into an array
-      Array.from(linesGroup.querySelectorAll("line")).forEach((line) => {
+      Array.from(group.querySelectorAll("line")).forEach((line) => {
         // Extract the line start and end for the current line
         const lineStart = {
           x: parseFloat(line.getAttribute("x1") as string),
@@ -107,8 +96,6 @@ class Tile {
       "and length",
       radius
     );
-    const lines = document.createElementNS("http://www.w3.org/2000/svg", "g");
-    const lineOffset = 0;
 
     const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
 
@@ -133,9 +120,7 @@ class Tile {
     line.setAttribute("stroke", "black");
     line.setAttribute("stroke-width", "1");
 
-    lines.appendChild(line);
-
-    return lines;
+    return line;
   }
 
   // return an SVG arc for the given start coordinates and radius between the start and end angle
