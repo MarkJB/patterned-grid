@@ -1,4 +1,4 @@
-# Generative Art Experiment
+# Truchet Tiles Generative Art Experiment - ChatGPT experiment to collaborativley code a Truchet Tiles generator
 
 ## Repeating patterned tiles in a grid
 
