@@ -14,7 +14,9 @@ In 2026, the original experiment was modernized with GitHub Copilot: the codebas
 
 ## Quick Run (No Build Required)
 
-The built version in dist is committed to the repository, so you can check out the code and open dist/index.html directly in a browser to use the generator without running a build step.
+- Live version on Github Pages: https://markjb.github.io/patterned-grid/
+
+- The built version in also in the repo under dist, so you can check out the code and open dist/index.html directly in a browser on your local machine to use the generator without running a build step.
 
 ## Development
 
