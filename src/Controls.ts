@@ -278,7 +278,26 @@ export class Controls {
     input.className = "seed-input";
     input.addEventListener("input", () => this.setState({ seed: input.value }));
     this.seedDisplay = input;
+
+    const copyBtn = el("button", {
+      className: "copy-btn",
+      title: "Copy seed to clipboard",
+    }) as HTMLButtonElement;
+    copyBtn.innerHTML = copyIcon();
+    copyBtn.addEventListener("click", () => {
+      const seedValue = input.value;
+      if (!seedValue) return;
+      navigator.clipboard.writeText(seedValue).then(() => {
+        const origHTML = copyBtn.innerHTML;
+        copyBtn.innerHTML = "✓";
+        setTimeout(() => {
+          copyBtn.innerHTML = origHTML;
+        }, 1500);
+      });
+    });
+
     wrap.appendChild(input);
+    wrap.appendChild(copyBtn);
     return wrap;
   }
 
@@ -382,4 +401,8 @@ function eyeIcon(): string {
 
 function eyeOffIcon(): string {
   return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+}
+
+function copyIcon(): string {
+  return `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>`;
 }

@@ -220,15 +220,39 @@ body {
 /* ---- Seed ---- */
 .seed-control {
   margin-bottom: 4px;
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
 }
 
 .seed-input {
-  width: 100%;
+  flex: 1;
   padding: 5px 7px;
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 12px;
   font-family: monospace;
+}
+
+.copy-btn {
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+  color: #555;
+  line-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 11px;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.copy-btn:hover {
+  background: #e8e8e8;
 }
 
 /* ---- Action buttons ---- */
