@@ -1,31 +1,34 @@
-# Truchet Tiles Generative Art Experiment - ChatGPT experiment to collaborativley code a Truchet Tiles generator
-
-## Repeating patterned tiles in a grid
+# Patterned Grid
 
 ![Example Image](https://github.com/MarkJB/patterned-grid/blob/master/images/example_image.png)
 
-Experiment using ChatGPT4. Most of the weird glitches I had to fix manually, some in conjunction with ChatGPT.
+This project started as an early Truchet-style generative art experiment inspired by [Dan Catt](https://github.com/revdancatt), built during the earlier wave of LLM coding assistants (circa 2023/Chat GPT4) where progress was very much a back-and-forth collaboration: prompt, inspect, fix, repeat. The goal was to explore that human-in-the-loop workflow while producing pen-plotter-friendly SVG tile compositions from arcs and lines arranged in a rotated grid, and it now stands as a snapshot of how much more capable LLM-assisted development has become.
 
-Tiles consist of SVG arcs and lines or just lines. The tiles vary the direction of the lines (either vertical or horizontal) and then the whole tile is rotated at random and layed out in a grid.
+## 2026 Copilot Update Status
 
-This is an attempt at reproducing generative art created by [Dan Catt](https://github.com/revdancatt). Why? Because I like the style and I wanted to see if I could reproduce it as technical challenge, a chance to understand the limits of ChatGPT and because I like the asthetic and wanted to plot some myself.
-
-### ChatGPT4 conclusion
-
-ChatGPT4 includes a lot of ommisions and mistakes when generating Typescript code. It helps if you have a reasonable understanding of the language you are using so you can spot and fix errors. ChatGPT is hit and miss when it comes to helping you fix errors. Sometimes you can end up in a circular conversation (fixing one error but introducing a previous error and so on), but it's also very good at explaining stuff with context (mostly correct) so its a good way to quickly learn without having to spend days reading documentation and going down blind alleys that can waste a lot of time. Its a bit like pair programming with someone who doesn't judge your lack of ability 😁
+In 2026, the original experiment was modernized with GitHub Copilot: the codebase is now TypeScript + Vite, generation is modularized (Tile, Grid, PathCombiner, LayerManager, Controls, SvgExporter), randomness is reproducible with seeded generation, paths are combined before layer assignment to reduce pen lifts, and the UI now supports manual regeneration (new seed or same seed), layer colors/visibility, path join tolerance, and SVG export.
 
 ## Prerequisites
 
-Nothing special required to run the example, but you'll need a working [nodejs install](https://nodejs.org/en) if you want to build or modify the code
+- Node.js installed locally: https://nodejs.org/en
 
-## Running
+## Quick Run (No Build Required)
 
-The resulting js has been comitted so this should run simply by opening index.html in a browser.
-
-Refresh the browser to generate a new version of the image.
+The built version in dist is committed to the repository, so you can check out the code and open dist/index.html directly in a browser to use the generator without running a build step.
 
 ## Development
 
-This should work with hot-reload and auto compile by running `npm run start`
+- Start dev server: `npm run dev`
+- Build production bundle: `npm run build`
+- Preview production build: `npm run preview`
 
-To update the static version, build a new bundle with `npm run build` and commit the new bundle.js.
+## GitHub Pages Deployment
+
+This repository now includes a GitHub Actions workflow at .github/workflows/deploy-pages.yml that builds the app and publishes dist to GitHub Pages on every push to main (and via manual workflow dispatch).
+
+One-time setup in GitHub:
+
+- Go to repository Settings -> Pages
+- Under Build and deployment, set Source to GitHub Actions
+
+After that, each push to main will automatically deploy a fresh version, so users can open the hosted site without checking out the repo.
