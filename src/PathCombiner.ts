@@ -27,36 +27,84 @@ export function combinePaths(
 
     visited[i] = true;
     const chainSegments: OrientedSegment[] = [orientForward(paths[i])];
+    let headStart = chainSegments[0].start;
     let tailEnd = chainSegments[0].end;
 
-    let found = true;
-    while (found) {
-      found = false;
+    while (true) {
+      let best:
+        | {
+            index: number;
+            segment: OrientedSegment;
+            prepend: boolean;
+            distance: number;
+          }
+        | undefined;
 
       for (let j = 0; j < paths.length; j++) {
         if (visited[j]) continue;
 
         const candidate = paths[j];
-        const distToStart = dist(tailEnd, candidate.start);
-        const distToEnd = dist(tailEnd, candidate.end);
 
-        if (distToStart <= tolerance) {
-          visited[j] = true;
-          const oriented = orientForward(candidate);
-          chainSegments.push(oriented);
-          tailEnd = oriented.end;
-          found = true;
-          break;
+        const appendForwardDistance = dist(tailEnd, candidate.start);
+        if (appendForwardDistance <= tolerance) {
+          if (!best || appendForwardDistance < best.distance) {
+            best = {
+              index: j,
+              segment: orientForward(candidate),
+              prepend: false,
+              distance: appendForwardDistance,
+            };
+          }
         }
 
-        if (distToEnd <= tolerance) {
-          visited[j] = true;
-          const oriented = orientReversed(candidate);
-          chainSegments.push(oriented);
-          tailEnd = oriented.end;
-          found = true;
-          break;
+        const appendReversedDistance = dist(tailEnd, candidate.end);
+        if (appendReversedDistance <= tolerance) {
+          if (!best || appendReversedDistance < best.distance) {
+            best = {
+              index: j,
+              segment: orientReversed(candidate),
+              prepend: false,
+              distance: appendReversedDistance,
+            };
+          }
         }
+
+        const prependForwardDistance = dist(headStart, candidate.end);
+        if (prependForwardDistance <= tolerance) {
+          if (!best || prependForwardDistance < best.distance) {
+            best = {
+              index: j,
+              segment: orientForward(candidate),
+              prepend: true,
+              distance: prependForwardDistance,
+            };
+          }
+        }
+
+        const prependReversedDistance = dist(headStart, candidate.start);
+        if (prependReversedDistance <= tolerance) {
+          if (!best || prependReversedDistance < best.distance) {
+            best = {
+              index: j,
+              segment: orientReversed(candidate),
+              prepend: true,
+              distance: prependReversedDistance,
+            };
+          }
+        }
+      }
+
+      if (!best) {
+        break;
+      }
+
+      visited[best.index] = true;
+      if (best.prepend) {
+        chainSegments.unshift(best.segment);
+        headStart = best.segment.start;
+      } else {
+        chainSegments.push(best.segment);
+        tailEnd = best.segment.end;
       }
     }
 
